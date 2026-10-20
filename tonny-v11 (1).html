@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tonny Luns Run v11 — A Lenda de HollyTonny</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Courier New',monospace;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#0a0a1a;min-height:100vh;padding:10px;color:#fff}
+.escondida{display:none!important}
+.tela{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#111;padding:22px;border-radius:8px;border:4px solid #ffcc00;color:#fff;z-index:100;text-align:center;width:92%;max-width:430px;max-height:95vh;overflow-y:auto}
+h1{color:#ffcc00;margin-bottom:12px;font-size:22px;text-shadow:2px 2px 0 #000}
+h2{color:#ff9900;margin-bottom:10px;font-size:17px}
+p{margin:5px 0;font-size:13px;line-height:1.5}
+.btn{background:#ffcc00;color:#000;border:3px solid #000;padding:10px 18px;font-size:14px;font-weight:bold;border-radius:4px;cursor:pointer;margin:4px;box-shadow:3px 3px 0 #000}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+.btn-verde{background:#4ade80}.btn-azul{background:#00bfff}.btn-roxo{background:#a855f7}.btn-cinza{background:#444;color:#fff}.btn-vermelho{background:#ef4444}.btn-dourado{background:#ffd700}.btn-ceu{background:#60a5fa}.btn-rosa{background:#ec4899}
+.btn-pequeno{padding:6px 12px;font-size:12px}
+.fileira{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:10px 0}
+.grid-fases{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0}
+.btn-fase{background:#2a3a5c;color:#fff;border:2px solid #446;padding:7px 2px;font-size:11px;font-weight:bold;border-radius:4px;cursor:pointer;box-shadow:2px 2px 0 #000;position:relative}
+.btn-fase:active{transform:translate(1px,1px)}
+.btn-fase.boss{background:#7f1d1d;border-color:#ef4444}
+.btn-fase.boss2{background:#1e3a5f;border-color:#00bfff}
+.btn-fase.ceu{background:#1e3a5f;border-color:#60a5fa}
+.btn-fase.bossceu{background:#312e81;border-color:#818cf8}
+.btn-fase.sombra{background:#1a1a2e;border-color:#666}
+.btn-fase.mec{background:#333;border-color:#ff6600}
+.opcao-skin,.opcao-arma{background:#222;padding:9px;border-radius:4px;border:2px solid #444;margin:6px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.opcao-skin.ativada{border-color:#ffcc00;background:#2a2a4a}
+.opcao-arma.equipada{border-color:#00bfff;background:#1a2a4a}
+#wrap-jogo{position:relative;width:100%;max-width:480px;margin:0 auto}
+canvas{display:block;width:100%;max-width:480px;height:400px;margin:0 auto;border:4px solid #222;border-radius:4px;background:#87ceeb;image-rendering:pixelated}
+.controles{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:200}
+.ctrl{width:58px;height:58px;border-radius:8px;border:4px solid #000;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 0 rgba(0,0,0,.4);background:#4ade80}
+.ctrl:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(0,0,0,.4)}
+.ctrl-vermelho{background:#ef4444}.ctrl-azul{background:#00bfff;font-size:12px;font-weight:bold}.ctrl-amarelo{background:#ffcc00;width:48px;height:48px;font-size:14px}.ctrl-roxo{background:#a855f7;font-size:16px}.ctrl-rosa{background:#ec4899;font-size:16px}
+.tela-fim{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.96);padding:28px;border-radius:8px;border:4px solid #ffd700;color:#fff;text-align:center;z-index:150;width:90%;max-width:360px;display:none}
+.tela-fim.mostrar{display:block!important}
+.tela-fim.vermelho{border-color:#ef4444}.tela-fim.verde{border-color:#4ade80}.tela-fim.roxo{border-color:#a855f7}
+.go-titulo{font-size:28px;color:#ef4444;text-shadow:3px 3px 0 #000;margin-bottom:10px;animation:treme .12s infinite alternate}
+@keyframes treme{from{transform:translateX(-3px)}to{transform:translateX(3px)}}
+.vit-titulo{font-size:24px;color:#4ade80;text-shadow:3px 3px 0 #000;margin-bottom:10px}
+.aviso{background:rgba(255,204,0,.1);border:2px solid #ffcc00;padding:7px;border-radius:4px;margin:8px 0;font-size:11px}
+.vida-jogador{position:absolute;top:8px;left:8px;color:#fff;font-size:13px;font-weight:bold;text-shadow:2px 2px 0 #000;z-index:10;line-height:1.4}
+.estrelas{display:flex;justify-content:center;gap:4px;margin:8px 0;font-size:22px}
+.estrela{color:#333}.estrela.ganha{color:#ffd700;text-shadow:0 0 6px #ffa500}
+.capitulo{color:#ff9900;margin:10px 0 5px 0;border-bottom:2px solid #333;padding-bottom:3px;font-size:12px}
+.cinematica{position:fixed;inset:0;background:#000;z-index:400;display:flex;align-items:center;justify-content:center;padding:20px}
+.cinematica-box{background:#111;border:4px solid #8b5cf6;border-radius:8px;padding:22px;max-width:420px;color:#fff;text-align:center;width:92%}
+.dialogo{background:#222;border:2px solid #555;border-radius:6px;padding:12px;margin:12px 0;min-height:70px;font-size:13px;text-align:left;line-height:1.6}
+.evento-card{background:#222;padding:10px;border-radius:4px;border:2px solid #444;margin:6px 0;text-align:left}
+.evento-card.ativo{border-color:#4ade80;background:#1a3a2a}
+.conquista{background:#222;padding:8px;border-radius:4px;border:2px solid #444;margin:4px 0;font-size:12px;text-align:left}
+.conquista.feita{border-color:#ffd700;background:#3a3010}
+</style>
+</head>
+<body>
+
+<div id="menu" class="tela">
+  <h1>🐰 TONNY LUNS RUN</h1>
+  <p style="color:#66ccff;font-size:12px;margin-bottom:8px">★ A LENDA DE HOLLYTONNY ★</p>
+  <p style="color:#ffd700">💰 <span id="m-moedas">0</span> | 💎 <span id="m-dias">0</span> | ⭐ <span id="m-estrelas">0</span></p>
+  <div class="fileira"><button class="btn btn-verde" id="b-jogar">▶️ JOGAR</button></div>
+  <div class="fileira">
+    <button class="btn" id="b-fases">🗺️ FASES</button>
+    <button class="btn btn-roxo" id="b-skins">🎨 SKINS</button>
+    <button class="btn btn-azul" id="b-armas">🔫 ARMAS</button>
+  </div>
+  <div class="fileira">
+    <button class="btn btn-dourado" id="b-loja">🛒 LOJA</button>
+    <button class="btn btn-rosa" id="b-eventos">🎃 EVENTOS</button>
+    <button class="btn btn-ceu" id="b-missoes">📋 MISSÕES</button>
+  </div>
+  <div class="fileira">
+    <button class="btn btn-roxo" id="b-caixao">⚰️ ROUBO DO CAIXÃO</button>
+    <button class="btn btn-cinza" id="b-config">⚙️</button>
+  </div>
+  <div class="aviso">v11 — A Lenda de HollyTonny · 110+ fases · 12 chefes · 10 skins · 9 armas</div>
+  <p style="margin-top:8px;font-size:10px;color:#888">Kplor Studio © 2026 · Criador: Gabriel Enedino</p>
+</div>
+
+<div id="t-fases" class="tela escondida">
+  <h2>🗺️ FASES</h2>
+  <h3 class="capitulo">🌲 Início & Chefes</h3>
+  <div class="grid-fases" id="cap1"></div>
+  <h3 class="capitulo">🌙 Noite & Telhados</h3>
+  <div class="grid-fases" id="cap2"></div>
+  <h3 class="capitulo">🏭 Fábrica & Desafios</h3>
+  <div class="grid-fases" id="cap3"></div>
+  <h3 class="capitulo">☁️ Céu de HollyTonny (101-110)</h3>
+  <div class="grid-fases" id="cap4"></div>
+  <button class="btn btn-cinza" id="b-volt-fases">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-skins" class="tela escondida">
+  <h2>🎨 SKINS (10)</h2>
+  <p style="color:#ffd700;margin-bottom:8px">💰 <span id="s-moedas">0</span></p>
+  <div id="lista-skins"></div>
+  <button class="btn btn-cinza" id="b-volt-skins">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-armas" class="tela escondida">
+  <h2>🔫 ARMAS (9)</h2>
+  <p style="color:#ffd700;margin-bottom:8px">💰 <span id="a-moedas">0</span></p>
+  <div id="lista-armas"></div>
+  <button class="btn btn-cinza" id="b-volt-armas">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-loja" class="tela escondida">
+  <h2>🛒 LOJA</h2>
+  <p style="color:#ffd700">💰 <span id="l-moedas">0</span> | 💎 <span id="l-dias">0</span></p>
+  <div style="background:#222;padding:10px;border-radius:4px;border:2px solid #444;margin:8px 0">
+    <p>📦 Baú Comum — 100💰</p><button class="btn btn-pequeno btn-verde" id="b-bau1">COMPRAR</button>
+  </div>
+  <div style="background:#222;padding:10px;border-radius:4px;border:2px solid #00bfff;margin:8px 0">
+    <p>💎 Baú de Diamantes — 500💰</p><button class="btn btn-pequeno btn-verde" id="b-bau2">COMPRAR</button>
+  </div>
+  <button class="btn btn-cinza" id="b-volt-loja">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-eventos" class="tela escondida">
+  <h2>🎃 EVENTOS ESPECIAIS</h2>
+  <div id="lista-eventos"></div>
+  <button class="btn btn-cinza" id="b-volt-eventos">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-missoes" class="tela escondida">
+  <h2>📋 MISSÕES & CONQUISTAS</h2>
+  <div id="lista-missoes"></div>
+  <button class="btn btn-cinza" id="b-volt-missoes">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-config" class="tela escondida">
+  <h2>⚙️ CONFIGURAÇÕES</h2>
+  <button class="btn btn-pequeno" id="b-tutorial">📖 REVER TUTORIAL</button><br><br>
+  <button class="btn btn-vermelho btn-pequeno" id="b-reset">🗑️ APAGAR PROGRESSO</button><br><br>
+  <button class="btn btn-cinza" id="b-volt-config">⬅️ VOLTAR</button>
+</div>
+
+<div id="t-jogo" class="escondida">
+  <div id="wrap-jogo">
+    <div class="vida-jogador">❤️ <span id="vida-valor">3</span> | 🔫 <span id="arma-nome">Pistola</span><br>🏃 <span id="dist-valor">0</span>m | 💰 <span id="moedas-valor">0</span></div>
+    <canvas id="cv" width="480" height="400"></canvas>
+  </div>
+  <div class="controles">
+    <button class="ctrl" id="c-pular">⬆</button>
+    <button class="ctrl ctrl-amarelo" id="c-dash">💨</button>
+    <button class="ctrl ctrl-vermelho" id="c-atacar">🔫</button>
+    <button class="ctrl ctrl-roxo" id="c-veiculo">🚁</button>
+    <button class="ctrl ctrl-azul" id="c-pausa">⏸</button>
+  </div>
+</div>
+
+<div id="cinematica" class="cinematica escondida">
+  <div class="cinematica-box">
+    <h2 id="cin-titulo" style="color:#a855f7">⚰️ O ROUBO DO CAIXÃO</h2>
+    <p style="color:#888;font-size:11px">Março de 1980 — HollyTonny</p>
+    <div class="dialogo" id="cin-texto"></div>
+    <div class="fileira">
+      <button class="btn btn-cinza btn-pequeno" id="b-pular-cena">PULAR CENA</button>
+      <button class="btn btn-verde btn-pequeno" id="b-prox-cena">CONTINUAR ➡️</button>
+    </div>
+  </div>
+</div>
+
+<div id="tutorial" class="tela escondida" style="border-color:#4ade80">
+  <h2 style="color:#4ade80">📖 TUTORIAL</h2>
+  <p id="tut-texto" style="margin:15px 0;font-size:14px;line-height:1.7"></p>
+  <div class="fileira">
+    <button class="btn btn-cinza btn-pequeno" id="b-pular-tut">PULAR</button>
+    <button class="btn btn-verde btn-pequeno" id="b-prox-tut">PRÓXIMO ➡️</button>
+  </div>
+</div>
+
+<div id="t-pausa" class="tela-fim roxo">
+  <h2>⏸️ PAUSADO</h2><br>
+  <button class="btn btn-verde" id="b-cont">▶️ CONTINUAR</button><br><br>
+  <button class="btn" id="b-rein">🔄 REINICIAR</button><br><br>
+  <button class="btn btn-cinza" id="b-sair">⬅️ SAIR</button>
+</div>
+
+<div id="t-gameover" class="tela-fim vermelho">
+  <div class="go-titulo">GAME OVER</div>
+  <p>🏃 <span id="go-dist">0</span>m | 💰 <span id="go-moedas">0</span></p><br>
+  <button class="btn btn-verde" id="b-tentar">🔄 TENTAR NOVAMENTE</button><br><br>
+  <button class="btn btn-cinza" id="b-go-menu">⬅️ MENU</button>
+</div>
+
+<div id="t-vitoria" class="tela-fim verde">
+  <div class="vit-titulo">🎉 VITÓRIA!</div>
+  <p id="vit-texto">Fase concluída!</p>
+  <p>💰 +<span id="vit-moedas">0</span> moedas</p>
+  <div class="estrelas" id="vit-estrelas"></div><br>
+  <button class="btn btn-verde" id="b-prox">➡️ PRÓXIMA FASE</button><br><br>
+  <button class="btn" id="b-rep">🔄 REPETIR</button><br><br>
+  <button class="btn btn-cinza" id="b-vit-menu">⬅️ MENU</button>
+</div>
+
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let save={moedas:0,dias:0,estrelasTotal:0,hw:false,dourado:false,piscina:false,explorador:false,celeste:false,piloto:false,deise:false,royVoador:false,sombra:false,guardiao:false,skin:'padrao',arma:'pistola',armasCompradas:{pistola:true},fasesCompletas:{},estrelas:{},tutorialFeito:false,ceuDesbloqueado:false,caixaoFeito:false,eventos:{noite:false,halloween:false,touro:false,mec:false},conquistas:{}};
+// CARREGAMENTO SEGURO — NÃO USA Object.assign (que apaga estrelas!)
+function carregarSave(){
+  try{
+    let c=null;
+    // Tenta v11 primeiro, depois migra de v10/v9 se existir
+    const s11=localStorage.getItem('tonnyRunV11');
+    if(s11){c=JSON.parse(s11);}
+    else{
+      const s10=localStorage.getItem('tonnyRunV10');
+      if(s10){c=JSON.parse(s10);mostrarMsgLoad('📂 Progresso da v10 migrado!');}
+      else{
+        const s9=localStorage.getItem('tonnyRunV9');
+        if(s9){c=JSON.parse(s9);mostrarMsgLoad('📂 Progresso da v9 migrado!');}
+      }
+    }
+    if(!c)return;
+    // Carrega CADA CAMPO SEPARADAMENTE — nunca sobrescreve objetos aninhados!
+    if(typeof c.moedas==='number')save.moedas=c.moedas;
+    if(typeof c.dias==='number')save.dias=c.dias;
+    if(typeof c.hw==='boolean')save.hw=c.hw;
+    if(typeof c.dourado==='boolean')save.dourado=c.dourado;
+    if(typeof c.piscina==='boolean')save.piscina=c.piscina;
+    if(typeof c.explorador==='boolean')save.explorador=c.explorador;
+    if(typeof c.celeste==='boolean')save.celeste=c.celeste;
+    if(typeof c.piloto==='boolean')save.piloto=c.piloto;
+    if(typeof c.deise==='boolean')save.deise=c.deise;
+    if(typeof c.royVoador==='boolean')save.royVoador=c.royVoador;
+    if(typeof c.sombra==='boolean')save.sombra=c.sombra;
+    if(typeof c.guardiao==='boolean')save.guardiao=c.guardiao;
+    if(typeof c.skin==='string')save.skin=c.skin;
+    if(typeof c.arma==='string')save.arma=c.arma;
+    if(typeof c.tutorialFeito==='boolean')save.tutorialFeito=c.tutorialFeito;
+    if(typeof c.ceuDesbloqueado==='boolean')save.ceuDesbloqueado=c.ceuDesbloqueado;
+    if(typeof c.caixaoFeito==='boolean')save.caixaoFeito=c.caixaoFeito;
+    // OBJETOS ANINHADOS — mescla, NÃO sobrescreve! (isso que fazia as estrelas sumirem)
+    if(c.armasCompradas&&typeof c.armasCompradas==='object'){for(const k in c.armasCompradas)save.armasCompradas[k]=c.armasCompradas[k];}
+    if(c.fasesCompletas&&typeof c.fasesCompletas==='object'){for(const k in c.fasesCompletas)save.fasesCompletas[k]=c.fasesCompletas[k];}
+    if(c.estrelas&&typeof c.estrelas==='object'){for(const k in c.estrelas){const v=parseInt(c.estrelas[k]);if(!isNaN(v)&&v>0)save.estrelas[k]=Math.max(save.estrelas[k]||0,v);}}
+    if(c.eventos&&typeof c.eventos==='object'){for(const k in c.eventos)save.eventos[k]=c.eventos[k];}
+    if(c.conquistas&&typeof c.conquistas==='object'){for(const k in c.conquistas)save.conquistas[k]=c.conquistas[k];}
+    salvar(); // Salva imediatamente no formato v11
+  }catch(e){console.log('Erro ao carregar:',e);}
+}
+function mostrarMsgLoad(t){setTimeout(()=>alert(t),500);}
+carregarSave();
+function salvar(){try{localStorage.setItem('tonnyRunV11',JSON.stringify(save));}catch(e){}}
+const ARMAS={
+  pistola:{nome:'Pistola',preco:0,dano:15,cooldown:300,cor:'#888',vel:8},
+  leve:{nome:'Arma Leve x2',preco:10,dano:20,cooldown:250,cor:'#aa6633',vel:9},
+  pp19:{nome:'PP-19',preco:20,dano:25,cooldown:200,cor:'#556633',vel:10},
+  p90:{nome:'P90',preco:500,dano:40,cooldown:150,cor:'#222',vel:12},
+  bolhas:{nome:'Lançador de Bolhas',preco:30,dano:18,cooldown:220,cor:'#00ffff',vel:7},
+  espuma:{nome:'Lançador de Espuma',preco:50,dano:22,cooldown:280,cor:'#fff',vel:6},
+  estrelas:{nome:'Atirador de Estrelas',preco:100,dano:30,cooldown:180,cor:'#ffd700',vel:11},
+  vento:{nome:'Lançador de Vento',preco:200,dano:35,cooldown:160,cor:'#a5f3fc',vel:13},
+  eletrico:{nome:'Brinquedo Elétrico',preco:0,dano:45,cooldown:140,cor:'#ffff00',vel:14}
+};
+function fp(i){return {ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,hp:0,alvo:150+i*5,moedaMeta:10+i,armas:false,holly:false,floresta:false,ceuBioma:false,noite:false,fabrica:false,dificil:false,nome:'Fase '+i};}
+const FASES={};
+for(let i=1;i<=110;i++)FASES[i]=fp(i);
+FASES[3]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:'roy',hp:700,alvo:0,moedaMeta:0,armas:true,qtdArmas:20,holly:false,floresta:false,noite:false,fabrica:false,dificil:false,nome:'BOSS ROY',frase:'🔫 Pegue as armas e atire no Roy!'};
+FASES[5]={ceu:'#4a1a1a',chao:'#4a3520',terra:'#3a2a1a',lua:false,boss:'pizza',hp:600,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:false,fabrica:false,dificil:false,nome:'PIZZA LORD',frase:'🍕 Pizza Lord apareceu!'};
+FASES[10]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:'cam',hp:800,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:false,nome:'CAMINHAO DE SORVETE'};
+for(let i=11;i<=19;i++)FASES[i]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:200+i*5,moedaMeta:15+i,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:false,nome:'Fase '+i};
+FASES[20]={ceu:'#1a1a4e',chao:'#228b22',terra:'#1a4a1a',lua:true,boss:null,alvo:300,moedaMeta:30,armas:false,holly:false,floresta:true,noite:false,fabrica:false,dificil:false,nome:'FLORESTA ENCANTADA'};
+for(let i=21;i<=24;i++)FASES[i]={ceu:'#0a0a2e',chao:'#2a2a3a',terra:'#1a1a2a',lua:true,boss:null,alvo:250+i*5,moedaMeta:20+i,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:false,nome:'Ruas Noturnas '+i};
+FASES[25]={ceu:'#0a0a2e',chao:'#2a2a3a',terra:'#1a1a2a',lua:true,boss:'sombra',hp:800,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:false,nome:'SOMBRA DE HOLLYTONNY',frase:'👤 A Sombra apareceu!'};
+for(let i=26;i<=29;i++)FASES[i]={ceu:'#0a0a2e',chao:'#2a2a3a',terra:'#1a1a2a',lua:true,boss:null,alvo:280+i*5,moedaMeta:25+i,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:false,nome:'Noite '+i};
+for(let i=31;i<=34;i++)FASES[i]={ceu:'#0a0a2e',chao:'#333',terra:'#222',lua:true,boss:null,alvo:300+i*5,moedaMeta:25+i,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:false,nome:'Telhados '+i};
+FASES[35]={ceu:'#0a0a2e',chao:'#333',terra:'#222',lua:true,boss:'royN',hp:1200,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:false,nome:'ROY NOTURNO',frase:'🦝 Roy, o Guaxinim Noturno!'};
+for(let i=36;i<=39;i++)FASES[i]={ceu:'#0a0a2e',chao:'#333',terra:'#222',lua:true,boss:null,alvo:320+i*5,moedaMeta:28+i,armas:false,holly:true,floresta:false,noite:true,fabrica:false,dificil:true,nome:'Telhados '+i};
+FASES[40]={ceu:'#4a1a1a',chao:'#4a3520',terra:'#3a2a1a',lua:false,boss:'pizza',hp:1000,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:false,fabrica:false,dificil:false,nome:'PIZZA LORD'};
+for(let i=41;i<=49;i++)FASES[i]={ceu:'#1a4a1a',chao:'#228b22',terra:'#1a4a1a',lua:true,boss:null,alvo:300+i*5,moedaMeta:30+i,armas:false,holly:false,floresta:true,noite:false,fabrica:false,dificil:false,nome:'Floresta '+i};
+FASES[50]={ceu:'#1a1a4e',chao:'#228b22',terra:'#1a4a1a',lua:true,boss:'roy',hp:900,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:true,noite:false,fabrica:false,dificil:true,dirigivel:true,nome:'ROY DIRIGIVEL'};
+for(let i=51;i<=54;i++)FASES[i]={ceu:'#3a1a1a',chao:'#4a3520',terra:'#2a1a1a',lua:false,boss:null,alvo:350+i*5,moedaMeta:35+i,armas:false,holly:true,floresta:false,noite:false,fabrica:false,dificil:true,nome:'Destruida '+i};
+FASES[55]={ceu:'#3a1a1a',chao:'#4a3520',terra:'#2a1a1a',lua:false,boss:'mecanico',hp:1500,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:false,fabrica:true,dificil:true,nome:'COELHO MECANICO',frase:'🤖 O Coelho Mecânico apareceu! Quebre sua armadura!'};
+for(let i=56;i<=59;i++)FASES[i]={ceu:'#3a1a1a',chao:'#4a3520',terra:'#2a1a1a',lua:false,boss:null,alvo:380+i*5,moedaMeta:38+i,armas:false,holly:true,floresta:false,noite:false,fabrica:false,dificil:true,nome:'Ruinas '+i};
+FASES[60]={ceu:'#333366',chao:'#222244',terra:'#111133',lua:true,boss:null,alvo:500,moedaMeta:50,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:true,nome:'MODO DESAFIO'};
+for(let i=61;i<=64;i++)FASES[i]={ceu:'#2a2a2a',chao:'#444',terra:'#333',lua:false,boss:null,alvo:400+i*5,moedaMeta:40+i,armas:false,holly:false,floresta:false,noite:false,fabrica:true,dificil:true,nome:'Fabrica '+i};
+FASES[65]={ceu:'#2a2a2a',chao:'#444',terra:'#333',lua:false,boss:'fabrica',hp:1800,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,noite:false,fabrica:true,dificil:true,nome:'GUARDIAO DA FABRICA',frase:'🤖 Guardião da Fábrica! Cuidado com os robôs!'};
+for(let i=66;i<=69;i++)FASES[i]={ceu:'#2a2a2a',chao:'#444',terra:'#333',lua:false,boss:null,alvo:420+i*5,moedaMeta:42+i,armas:false,holly:false,floresta:false,noite:false,fabrica:true,dificil:true,nome:'Fabrica '+i};
+FASES[70]={ceu:'#4a1a1a',chao:'#4a3520',terra:'#3a2a1a',lua:false,boss:'pizza',hp:1500,alvo:0,moedaMeta:0,armas:false,holly:true,floresta:false,noite:false,fabrica:false,dificil:true,nome:'PIZZA LORD FORTE'};
+for(let i=71;i<=79;i++)FASES[i]={ceu:'#220000',chao:'#331111',terra:'#220808',lua:false,boss:null,alvo:500+i*5,moedaMeta:50+i,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:true,nome:'Sobrevivencia '+i};
+FASES[80]={ceu:'#220000',chao:'#331111',terra:'#220808',lua:false,boss:null,alvo:800,moedaMeta:80,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:true,nome:'DESAFIO DIFICIL'};
+for(let i=81;i<=84;i++)FASES[i]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:450+i*5,moedaMeta:45+i,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:true,nome:'Ceus '+i};
+FASES[85]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:'nuvensS',hp:2000,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:true,nome:'SENHOR DAS NUVENS',frase:'👑 O Senhor das Nuvens!'};
+for(let i=86;i<=89;i++)FASES[i]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:480+i*5,moedaMeta:48+i,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:true,nome:'Ceus '+i};
+FASES[90]={ceu:'#220000',chao:'#331111',terra:'#220808',lua:false,boss:'cam',hp:1200,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,noite:false,fabrica:false,dificil:true,nome:'CAMINHAO DIFICIL'};
+for(let i=91;i<=99;i++)FASES[i]={ceu:'#111',chao:'#222',terra:'#111',lua:true,boss:null,alvo:450+i*5,moedaMeta:45+i,armas:false,holly:false,floresta:true,noite:false,fabrica:false,dificil:true,nome:'Final '+i};
+FASES[100]={ceu:'#111',chao:'#222',terra:'#111',lua:true,boss:'roy',hp:1500,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:true,noite:false,fabrica:false,dificil:true,dirigivel:true,nome:'ROY FINAL'};
+FASES[101]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:300,moedaMeta:40,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:false,nome:'PORTAL SECRETO',frase:'☁️ Bem-vindo ao Céu de HollyTonny!'};
+FASES[102]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:350,moedaMeta:45,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:false,nome:'CAMARA DAS SOMBRAS'};
+FASES[103]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:400,moedaMeta:50,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:false,nome:'CAMINHO DAS MAQUINAS'};
+FASES[104]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:450,moedaMeta:55,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:false,nome:'CIDADE NAS NUVENS'};
+FASES[105]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:'nuvens',hp:800,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:false,nome:'GUARDIAO DAS NUVENS',frase:'👑 Guardião das Nuvens! 3 fases!'};
+FASES[106]={ceu:'#2a2a2a',chao:'#444',terra:'#333',lua:false,boss:null,alvo:500,moedaMeta:60,armas:false,holly:false,floresta:false,ceuBioma:false,noite:false,fabrica:true,dificil:true,nome:'LABORATORIO PERDIDO'};
+FASES[107]={ceu:'#2a2a2a',chao:'#444',terra:'#333',lua:false,boss:null,alvo:550,moedaMeta:65,armas:false,holly:false,floresta:false,ceuBioma:false,noite:false,fabrica:true,dificil:true,nome:'EXERCITO DE BRINQUEDOS'};
+FASES[108]={ceu:'#4a1a1a',chao:'#4a3520',terra:'#3a2a1a',lua:false,boss:null,alvo:600,moedaMeta:70,armas:false,holly:true,floresta:false,ceuBioma:false,noite:false,fabrica:false,dificil:true,nome:'ULTIMA PERSEGUICAO'};
+FASES[109]={ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,boss:null,alvo:650,moedaMeta:75,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:true,nome:'PORTAL DE HOLLYTONNY'};
+FASES[110]={ceu:'#312e81',chao:'#4c1d95',terra:'#2e1065',lua:true,boss:'final',hp:2500,alvo:0,moedaMeta:0,armas:false,holly:false,floresta:false,ceuBioma:true,noite:false,fabrica:false,dificil:true,nome:'O SEGREDO DE HOLLYTONNY',frase:'👑 CONFRONTO FINAL! 3 fases!'};
+
+let G={rod:false,paus:false,fase:1,dist:0,moedas:0,dias:0,x:60,y:0,vy:0,noChao:true,pulos:2,vel:3,vida:3,invul:0,arma:true,ultTiro:0,dashCd:0,boss:null,bossHP:0,bossMax:0,bossT:0,bossY:60,bossDir:1,obs:[],coins:[],armasI:[],baus:[],tiros:[],inimigos:[],plataformas:[],carros:[],nuvens:[],ilhas:[],msg:'',msgT:0,loop:null,chaoX:0,alvo:0,dificil:false,ceuBioma:false,levouDano:false,moedaMeta:0,veiculo:null,vento:0,missaoCaixao:false,royDist:0,royFugindo:false,faseChefe:1,armadura:0,noite:false,fabrica:false,eventoAtivo:null};
+function attUI(){['m-moedas','l-moedas','s-moedas','a-moedas'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=save.moedas;});['m-dias','l-dias'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=save.dias;});const te=Object.values(save.estrelas).reduce((a,b)=>a+b,0);save.estrelasTotal=te;const e=document.getElementById('m-estrelas');if(e)e.textContent=te;}
+function esconder(){['menu','t-fases','t-skins','t-armas','t-loja','t-eventos','t-missoes','t-config','t-jogo','cinematica','tutorial'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('escondida');});document.querySelectorAll('.tela-fim').forEach(t=>t.classList.remove('mostrar'));}
+function menu(){parar();esconder();document.getElementById('menu').classList.remove('escondida');attUI();}
+function abrirFases(){esconder();gerarFases();document.getElementById('t-fases').classList.remove('escondida');}
+function abrirSkins(){esconder();attSkins();document.getElementById('t-skins').classList.remove('escondida');}
+function abrirArmas(){esconder();attArmas();document.getElementById('t-armas').classList.remove('escondida');}
+function abrirLoja(){esconder();attUI();document.getElementById('t-loja').classList.remove('escondida');}
+function abrirEventos(){esconder();attEventos();document.getElementById('t-eventos').classList.remove('escondida');}
+function abrirMissoes(){esconder();attMissoes();document.getElementById('t-missoes').classList.remove('escondida');}
+function abrirConfig(){esconder();document.getElementById('t-config').classList.remove('escondida');}
+function abrirCeu(){if(!save.ceuDesbloqueado&&!save.fasesCompletas[100]){alert('🔒 Complete a Fase 100!');return;}iniciar(101);}
+function abrirCaixao(){iniciarCinematica();}
+
+function gerarFases(){
+  const caps={cap1:[1,2,3,4,5,6,7,8,9,10,20,40,50,60,70,80,90,100],cap2:[21,22,23,24,25,26,27,28,29,31,32,33,34,35,36,37,38,39],cap3:[55,65,85,106,107,108,109,11,12,13,14,15,16,17,18,19,41,42,43,44,45,46,47,48,49,51,52,53,54,56,57,58,59,61,62,63,64,66,67,68,69,71,72,73,74,75,76,77,78,79,81,82,83,84,86,87,88,89,91,92,93,94,95,96,97,98,99],cap4:[101,102,103,104,105,106,107,108,109,110]};
+  for(const [cid,fs] of Object.entries(caps)){
+    const el=document.getElementById(cid);if(!el)continue;el.innerHTML='';
+    fs.forEach(f=>{
+      const F=FASES[f];if(!F)return;
+      const b=document.createElement('button');b.className='btn-fase';
+      const desb=f===1||!!save.fasesCompletas[f-1]||(f>=101&&save.ceuDesbloqueado);
+      if(F.boss==='roy'||F.boss==='royN')b.classList.add('boss');
+      if(F.boss==='cam'||F.boss==='pizza')b.classList.add('boss2');
+      if(F.boss==='nuvens'||F.boss==='nuvensS'||F.boss==='final')b.classList.add('bossceu');
+      if(F.boss==='sombra')b.classList.add('sombra');
+      if(F.boss==='mecanico'||F.boss==='fabrica')b.classList.add('mec');
+      if(F.ceuBioma)b.classList.add('ceu');
+      if(!desb){b.textContent='🔒';b.style.opacity='.4';b.style.pointerEvents='none';}
+      else{b.textContent=f;const est=save.estrelas[f]||0;if(est>0){const s=document.createElement('span');s.style.cssText='position:absolute;bottom:1px;right:2px;font-size:8px;color:#ffd700';s.textContent='★'.repeat(est);b.appendChild(s);}b.onclick=()=>iniciar(f);}
+      el.appendChild(b);
+    });
+  }
+}
+function attSkins(){
+  const l=document.getElementById('lista-skins');
+  const sk=[{id:'padrao',nome:'🐰 Tonny Laranja',preco:0,tem:true},{id:'halloween',nome:'🎃 Halloween',preco:500,tem:save.hw},{id:'dourado',nome:'✨ Dourado',preco:1000,tem:save.dourado},{id:'piscina',nome:'🏖️ Piscina',preco:750,tem:save.piscina},{id:'explorador',nome:'🧭 Explorador',preco:300,tem:save.explorador},{id:'celeste',nome:'☁️ Celeste',preco:400,tem:save.celeste},{id:'piloto',nome:'✈️ Piloto',preco:600,tem:save.piloto},{id:'deise',nome:'🌸 Deise',preco:800,tem:save.deise},{id:'royVoador',nome:'🦝 Roy Voador',preco:1500,tem:save.royVoador},{id:'sombra',nome:'👤 Sombra (Chefe 25)',preco:0,tem:save.sombra},{id:'guardiao',nome:'🤖 Guardião Mecânico (Chefe 65)',preco:0,tem:save.guardiao}];
+  l.innerHTML='';
+  sk.forEach(s=>{
+    const d=document.createElement('div');d.className='opcao-skin'+(save.skin===s.id?' ativada':'');
+    let btn='';
+    if(save.skin===s.id)btn='<span style="color:#4ade80">✓ ATIVO</span>';
+    else if(s.tem)btn='<button class="btn btn-pequeno btn-cinza" data-use="'+s.id+'">USAR</button>';
+    else if(s.preco>0)btn='<button class="btn btn-pequeno btn-verde" data-buy="'+s.id+'">'+s.preco+'💰</button>';
+    else btn='<span style="color:#ef4444">🔒 Derrote o chefe</span>';
+    d.innerHTML='<span>'+s.nome+'</span>'+btn;l.appendChild(d);
+  });
+  l.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{save.skin=b.dataset.use;salvar();attSkins();});
+  l.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.buy;const s=sk.find(x=>x.id===id);
+    if(save.moedas>=s.preco){save.moedas-=s.preco;save[id]=true;save.skin=id;salvar();attUI();attSkins();alert('✅ Skin comprada!');}
+    else alert('❌ Precisa de '+s.preco+' moedas!');
+  });
+}
+function attArmas(){
+  const l=document.getElementById('lista-armas');l.innerHTML='';
+  Object.entries(ARMAS).forEach(([id,a])=>{
+    const tem=save.armasCompradas[id]||id==='eletrico'&&save.conquistas.mecanico;
+    const d=document.createElement('div');d.className='opcao-arma'+(save.arma===id?' equipada':'');
+    let btn='';
+    if(save.arma===id)btn='<span style="color:#00bfff">✓ EQUIPADA</span>';
+    else if(tem)btn='<button class="btn btn-pequeno btn-cinza" data-use="'+id+'">EQUIPAR</button>';
+    else if(a.preco>0)btn='<button class="btn btn-pequeno btn-verde" data-buy="'+id+'">'+a.preco+'💰</button>';
+    else btn='<span style="color:#ef4444">🔒 Bônus de chefe</span>';
+    d.innerHTML='<span>🔫 '+a.nome+' (Dano '+a.dano+')</span>'+btn;l.appendChild(d);
+  });
+  l.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{save.arma=b.dataset.use;salvar();attArmas();});
+  l.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.buy;const a=ARMAS[id];
+    if(save.moedas>=a.preco){save.moedas-=a.preco;save.armasCompradas[id]=true;save.arma=id;salvar();attUI();attArmas();alert('✅ Comprada!');}
+    else alert('❌ Precisa de '+a.preco+'!');
+  });
+}
+function attEventos(){
+  const l=document.getElementById('lista-eventos');
+  const evs=[
+    {id:'noite',nome:'🌙 Noite de HollyTonny',desc:'Ruas iluminadas, moedas bônus, inimigos noturnos',ativo:save.eventos.noite},
+    {id:'halloween',nome:'🎃 Halloween',desc:'Abóboras, decoração temática, missões especiais',ativo:save.eventos.halloween},
+    {id:'touro',nome:'🗝️ Caça ao Tesouro',desc:'Encontre chaves escondidas e abra baús!',ativo:save.eventos.touro},
+    {id:'mec',nome:'🤖 Invasão Mecânica',desc:'Ondas de robôs! Derrote para recompensas!',ativo:save.eventos.mec}
+  ];
+  l.innerHTML='';
+  evs.forEach(e=>{
+    const d=document.createElement('div');d.className='evento-card'+(e.ativo?' ativo':'');
+    d.innerHTML='<strong>'+e.nome+'</strong><br><small style="color:#aaa">'+e.desc+'</small><br>'+(e.ativo?'<span style="color:#4ade80">✓ ATIVO</span>':'<button class="btn btn-pequeno btn-verde" data-ev="'+e.id+'">ATIVAR</button>');
+    l.appendChild(d);
+  });
+  l.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>{
+    save.eventos[b.dataset.ev]=true;salvar();attEventos();
+    save.moedas+=50;attUI();salvar();alert('🎉 Evento ativado! +50 moedas bônus!');
+  });
+}
+function attMissoes(){
+  const l=document.getElementById('lista-missoes');
+  const m=[
+    {id:'primeira',nome:'🏁 Primeira Fase',desc:'Complete sua primeira fase',feito:Object.keys(save.fasesCompletas).length>0},
+    {id:'roy',nome:'🦝 Derrote Roy',desc:'Vença o Roy na fase 3',feito:!!save.fasesCompletas[3]},
+    {id:'pizza',nome:'🍕 Derrote Pizza Lord',desc:'Vença na fase 40',feito:!!save.fasesCompletas[40]},
+    {id:'sombra',nome:'👤 Derrote a Sombra',desc:'Vença na fase 25',feito:!!save.fasesCompletas[25]},
+    {id:'mecanico',nome:'🤖 Derrote o Coelho Mecânico',desc:'Vença na fase 55 — desbloqueia Brinquedo Elétrico!',feito:!!save.fasesCompletas[55]},
+    {id:'ceu',nome:'☁️ Céu de HollyTonny',desc:'Desbloqueie o Céu (fase 100)',feito:save.ceuDesbloqueado},
+    {id:'caixao',nome:'⚰️ O Roubo do Caixão',desc:'Complete a missão especial',feito:save.caixaoFeito},
+    {id:'final',nome:'👑 O Segredo de HollyTonny',desc:'Vença o chefe final (fase 110)',feito:!!save.fasesCompletas[110]},
+    {id:'rico',nome:'💰 Colecionador',desc:'Junte 1000 moedas',feito:save.moedas>=1000},
+    {id:'estrelas',nome:'⭐ Mestre das Estrelas',desc:'Conquiste 50 estrelas',feito:save.estrelasTotal>=50}
+  ];
+  l.innerHTML='';
+  let feitas=0;
+  m.forEach(ms=>{
+    if(ms.feito){feitas++;save.conquistas[ms.id]=true;}
+    const d=document.createElement('div');d.className='conquista'+(ms.feito?' feita':'');
+    d.innerHTML=(ms.feito?'🏆 ':'🔒 ')+'<strong>'+ms.nome+'</strong><br><small style="color:#aaa">'+ms.desc+'</small>';
+    l.appendChild(d);
+  });
+  salvar();
+  l.innerHTML='<p style="color:#ffd700;margin-bottom:8px">Conquistas: '+feitas+'/'+m.length+'</p>'+l.innerHTML;
+}
+
+const CIN=[
+  {t:'⚰️ Março de 1980',d:'HollyTonny está silenciosa. A noite caiu. James Tonny está sozinho, perto de um caixão...'},
+  {t:'🦝 Roy aparece!',d:'De repente, Roy, o Guaxinim, surge das sombras! Ele corre em direção ao caixão!'},
+  {t:'🏃 ROY ROUBOU O CAIXÃO!',d:'Sem explicar nada, Roy agarra o caixão e sai correndo pelas ruas escuras!'},
+  {t:'😱 James surpreso!',d:'"VOLTE AQUI, ROY!" — James parte imediatamente na perseguição!'},
+  {t:'🏃 Perseguição começa!',d:'Recupere o caixão antes que Roy escape! Cuidado com as armadilhas!'}
+];
+let cinPasso=0;
+function iniciarCinematica(){esconder();cinPasso=0;document.getElementById('cinematica').classList.remove('escondida');atualizarCin();}
+function atualizarCin(){const c=CIN[cinPasso];document.getElementById('cin-titulo').textContent=c.t;document.getElementById('cin-texto').textContent=c.d;}
+function pularCena(){document.getElementById('cinematica').classList.add('escondida');iniciarMissaoCaixao();}
+function iniciarMissaoCaixao(){
+  esconder();document.getElementById('t-jogo').classList.remove('escondida');
+  G={rod:true,paus:false,fase:'caixao',dist:0,moedas:0,dias:0,x:60,y:0,vy:0,noChao:true,pulos:2,vel:3.5,vida:3,invul:0,arma:true,ultTiro:0,dashCd:0,boss:null,bossHP:0,bossMax:0,bossT:0,bossY:60,bossDir:1,obs:[],coins:[],armasI:[],baus:[],tiros:[],inimigos:[],plataformas:[],carros:[],nuvens:[],ilhas:[],msg:'🏃 PEGUE ROY! Ele está com o caixão!',msgT:200,loop:null,chaoX:0,alvo:500,dificil:false,ceuBioma:false,levouDano:false,moedaMeta:0,veiculo:null,vento:0,missaoCaixao:true,royDist:300,royFugindo:true,faseChefe:1,armadura:0,noite:true,fabrica:false,eventoAtivo:null};
+  document.getElementById('vida-valor').textContent=G.vida;
+  document.getElementById('arma-nome').textContent=ARMAS[save.arma].nome;
+  for(let i=0;i<20;i++)G.coins.push({x:150+i*80+Math.random()*40,y:150+Math.random()*80,peg:false});
+  if(G.loop)cancelAnimationFrame(G.loop);loop();
+}
+
+const TUT=[
+  {t:'🐰 Bem-vindo ao Tonny Luns Run!',d:'Você controla o Tonny, um coelho corajoso! Corra, pule e atire!'},
+  {t:'🦘 Pulo e Pulo Duplo',d:'Toque ⬆ para pular. Toque de novo no ar para fazer PULO DUPLO!'},
+  {t:'💨 Dash e Ataque',d:'💨 = dash (correr rápido). 🔫 = atirar nos inimigos e chefes!'},
+  {t:'💰 Moedas e Estrelas',d:'Colete moedas para comprar armas e skins. 3 estrelas por fase!'},
+  {t:'👑 Chefes',d:'Nas fases de chefe, atire até zerar a barra de vida. Cuidado com os projéteis!'},
+  {t:'🚁 Veículo (Céu)',d:'Nas fases do Céu (101+), use 🚁 para entrar no dirigível!'},
+  {t:'✅ Pronto!',d:'Boa sorte, Tonny! A lenda de HollyTonny começa agora!'}
+];
+let tutPasso=0;
+function mostrarTutorial(){tutPasso=0;document.getElementById('tutorial').classList.remove('escondida');atualizarTut();}
+function atualizarTut(){const t=TUT[tutPasso];document.getElementById('tut-texto').innerHTML='<strong>'+t.t+'</strong><br><br>'+t.d;document.getElementById('b-prox-tut').textContent=tutPasso>=TUT.length-1?'JOGAR!':'PRÓXIMO ➡️';}
+function fecharTutorial(){document.getElementById('tutorial').classList.add('escondida');save.tutorialFeito=true;salvar();}
+
+function iniciar(fase){
+  if(!FASES[fase])return menu();
+  const F=FASES[fase];
+  esconder();document.getElementById('t-jogo').classList.remove('escondida');
+  G={rod:true,paus:false,fase:fase,dist:0,moedas:0,dias:0,x:60,y:0,vy:0,noChao:true,pulos:2,vel:F.dificil?4.5:3,vida:3,invul:0,arma:true,ultTiro:0,dashCd:0,boss:F.boss||null,bossHP:F.hp||0,bossMax:F.hp||0,bossT:0,bossY:60,bossDir:1,obs:[],coins:[],armasI:[],baus:[],tiros:[],inimigos:[],plataformas:[],carros:[],nuvens:[],ilhas:[],msg:F.frase||'',msgT:F.frase?180:0,loop:null,chaoX:0,alvo:F.alvo||0,dificil:!!F.dificil,ceuBioma:!!F.ceuBioma,levouDano:false,moedaMeta:F.moedaMeta||0,veiculo:null,vento:F.ceuBioma?1:0,missaoCaixao:false,royDist:0,royFugindo:false,faseChefe:1,armadura:F.boss==='mecanico'?3:0,noite:!!F.noite,fabrica:!!F.fabrica,eventoAtivo:null};
+  document.getElementById('vida-valor').textContent=G.vida;
+  document.getElementById('arma-nome').textContent=ARMAS[save.arma].nome;
+  if(F.holly){G.carros=[{x:400,cor:'#ef4444'}];for(let i=0;i<4;i++)G.plataformas.push({x:300+i*250,y:220-(i%2)*50,w:80,h:14});}
+  if(F.ceuBioma){for(let i=0;i<8;i++)G.nuvens.push({x:i*120+Math.random()*60,y:30+Math.random()*100,v:0.3+Math.random()*0.5});for(let i=0;i<6;i++)G.ilhas.push({x:200+i*200,y:180+Math.random()*80,w:100});for(let i=0;i<5;i++)G.plataformas.push({x:250+i*220,y:200-(i%3)*60,w:70,h:12,movel:true,vx:i%2===0?0.8:-0.8});}
+  if(F.fabrica){for(let i=0;i<4;i++)G.plataformas.push({x:200+i*200,y:200-(i%2)*40,w:60,h:12});}
+  if(F.armas&&F.qtdArmas){for(let i=0;i<F.qtdArmas;i++)G.armasI.push({x:120+i*80+Math.random()*40,y:220+Math.random()*40,peg:false});}
+  for(let i=0;i<30;i++)G.coins.push({x:120+i*70+Math.random()*40,y:150+Math.random()*80,peg:false});
+  for(let i=0;i<3;i++)G.baus.push({x:400+i*500,aberto:false,tipo:i===2?'diamante':'moeda'});
+  if(G.boss)mostrarMsg('👑 CHEFE! '+G.bossHP+' HP');
+  if(G.loop)cancelAnimationFrame(G.loop);
+  if(!save.tutorialFeito&&fase===1)setTimeout(mostrarTutorial,300);
+  loop();
+}
+function parar(){G.rod=false;G.paus=false;if(G.loop)cancelAnimationFrame(G.loop);}
+function pausar(){if(!G.rod)return;G.paus=true;document.getElementById('t-pausa').classList.add('mostrar');}
+function continuar(){G.paus=false;document.getElementById('t-pausa').classList.remove('mostrar');}
+function mostrarMsg(t){G.msg=t;G.msgT=150;}
+function pular(){if(!G.rod||G.paus)return;if(G.noChao){G.vy=-13;G.noChao=false;G.pulos=1;}else if(G.pulos>0){G.vy=-11;G.pulos--;}}
+function dash(){if(!G.rod||G.paus||G.dashCd>0)return;G.dashCd=60;G.vy=-8;G.y+=15;G.noChao=false;}
+function atacar(){const ag=Date.now();const a=ARMAS[save.arma];if(!G.rod||G.paus||!G.arma||ag-G.ultTiro<a.cooldown)return;G.ultTiro=ag;G.tiros.push({x:G.x+30,y:260-G.y+15,vx:a.vel,dano:a.dano,cor:a.cor,tipo:save.arma});}
+function entrarVeiculo(){if(!G.rod||G.paus||!G.ceuBioma)return;if(G.veiculo){G.veiculo=null;mostrarMsg('🚁 Saiu!');}else{G.veiculo='dirigivel';G.vy=-5;mostrarMsg('🚁 Dirigível!');}}
+function dano(q){if(G.invul>0||!G.rod||G.paus)return;G.vida-=q;G.invul=90;G.levouDano=true;document.getElementById('vida-valor').textContent=Math.max(0,G.vida);if(G.vida<=0)gameOver();}
+function gameOver(){G.rod=false;save.moedas+=Math.floor(G.moedas/2);save.dias+=Math.floor(G.dias/2);salvar();document.getElementById('go-dist').textContent=Math.floor(G.dist);document.getElementById('go-moedas').textContent=Math.floor(G.moedas);document.getElementById('t-gameover').classList.add('mostrar');}
+function vitoria(){
+  G.rod=false;
+  let est=1;if(G.moedas>=G.moedaMeta)est++;if(!G.levouDano)est++;
+  if(G.fase>=101)save.ceuDesbloqueado=true;
+  if(G.fase===25)save.sombra=true;
+  if(G.fase===35)save.royVoador=true;
+  if(G.fase===55){save.conquistas.mecanico=true;save.armasCompradas.eletrico=true;}
+  if(G.fase===65)save.guardiao=true;
+  if(G.missaoCaixao){save.caixaoFeito=true;save.moedas+=200;}
+  else{save.fasesCompletas[G.fase]=true;const ant=save.estrelas[G.fase]||0;if(est>ant)save.estrelas[G.fase]=est;save.moedas+=G.moedas+50;}
+  save.dias+=G.dias+10;salvar();attUI();
+  document.getElementById('vit-texto').textContent=G.missaoCaixao?'⚰️ Caixão recuperado! +200💰!':'Fase '+G.fase+' concluída!';
+  document.getElementById('vit-moedas').textContent=G.moedas+(G.missaoCaixao?200:50);
+  const el=document.getElementById('vit-estrelas');el.innerHTML='';
+  for(let i=1;i<=3;i++){const s=document.createElement('span');s.className='estrela'+(i<=est?' ganha':'');s.textContent='★';el.appendChild(s);}
+  document.getElementById('t-vitoria').classList.add('mostrar');
+}
+function bossMorto(){
+  if((G.boss==='nuvens'||G.boss==='final')&&G.faseChefe<3){G.faseChefe++;G.bossHP=G.bossMax*0.6;G.bossMax=G.bossHP;mostrarMsg('👑 Fase '+G.faseChefe+'!');return;}
+  G.boss=null;mostrarMsg('🎉 CHEFE DERROTADO!');setTimeout(()=>{if(G.rod)vitoria();},1500);
+}
+
+function loop(){
+  if(!G.rod)return;
+  G.loop=requestAnimationFrame(loop);
+  if(G.paus)return;
+  const F=FASES[G.fase]||{ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,armas:false,holly:false,floresta:false,ceuBioma:false,noite:false,fabrica:false};
+  G.dist+=0.15;G.chaoX-=G.vel;
+  if(G.invul>0)G.invul--;if(G.dashCd>0)G.dashCd--;
+  if(G.vento>0&&!G.noChao)G.vy-=0.15;
+  if(G.veiculo){G.y+=2;if(G.y>150)G.y=150;if(!G.noChao)G.vy=Math.max(G.vy,-3);}
+  if(!G.noChao){G.vy+=0.7;G.y-=G.vy;if(G.y<=0){G.y=0;G.vy=0;G.noChao=true;G.pulos=2;}}
+  G.plataformas.forEach(p=>{
+    if(p.movel){p.x+=p.vx;if(p.x<200||p.x>800)p.vx*=-1;}
+    const px=p.x-G.dist*G.vel;
+    if(px>40&&px<100&&G.y>0&&G.y<p.y+20&&G.y>p.y-30&&G.vy>0){G.y=p.y;G.vy=0;G.noChao=true;G.pulos=2;}
+  });
+  if(F.armas){G.armasI.forEach(a=>{if(a.peg)return;const ax=a.x-G.dist*G.vel;if(ax>40&&ax<95&&Math.abs(a.y-(260-G.y))<50){a.peg=true;G.moedas+=20;mostrarMsg('🔫 +20💰!');}});}
+  G.coins.forEach(c=>{if(c.peg)return;const cx=c.x-G.dist*G.vel;if(cx>40&&cx<95&&Math.abs(c.y-(260-G.y))<50){c.peg=true;G.moedas+=10;}});
+  if(!G.boss&&Math.random()<(G.dificil?0.022:0.012))G.obs.push({x:520,w:24,h:40});
+  G.obs.forEach(o=>o.x-=G.vel);G.obs=G.obs.filter(o=>o.x>-50);
+  for(const o of G.obs){if(o.x>45&&o.x<95&&G.y<30){dano(1);break;}}
+  G.carros.forEach(c=>{c.x-=G.vel*0.8;const cx=c.x-G.dist*G.vel;if(cx>45&&cx<95&&G.y<25)dano(1);});
+  if(G.missaoCaixao&&G.royFugindo){G.royDist-=0.3;if(G.royDist<=0){G.royFugindo=false;vitoria();return;}if(Math.random()<0.015)G.inimigos.push({x:520,y:275,tipo:'armadilha',vx:-4});}
+  G.tiros.forEach(t=>t.x+=t.vx);G.tiros=G.tiros.filter(t=>t.x<520);
+  if(G.boss){
+    G.bossT++;G.bossY+=G.bossDir*(G.dificil?1.2:0.8);if(G.bossY>140||G.bossY<40)G.bossDir*=-1;
+    let inter=90;
+    if(G.dificil)inter=50;
+    else if(G.boss==='cam')inter=55;
+    else if(G.boss==='nuvens'||G.boss==='nuvensS')inter=60;
+    else if(G.boss==='final')inter=45;
+    else if(G.boss==='pizza')inter=70;
+    else if(G.boss==='sombra')inter=65;
+    else if(G.boss==='mecanico')inter=75;
+    else if(G.boss==='fabrica')inter=80;
+    if(G.bossT%inter===0){
+      if(G.boss==='roy'||G.boss==='royN'){G.inimigos.push({x:420,y:260-G.bossY,tipo:'peixe',vx:G.dificil?-4.5:-3.5});}
+      if(G.boss==='cam'){G.inimigos.push({x:420,y:275,tipo:'pneu',vx:G.dificil?-6:-5});G.inimigos.push({x:460,y:250,tipo:'pneu',vx:G.dificil?-6:-5});}
+      if(G.boss==='pizza'){G.inimigos.push({x:420,y:200+Math.random()*60,tipo:'onda',vx:G.dificil?-5.5:-4.5});}
+      if(G.boss==='sombra'){G.inimigos.push({x:420,y:260,tipo:'sombra',vx:-5});if(G.bossT%200===0)G.bossY=40+Math.random()*100;}
+      if(G.boss==='mecanico'){G.inimigos.push({x:420,y:270,tipo:'peca',vx:-5});if(G.bossT%150===0)G.inimigos.push({x:420,y:240,tipo:'peca',vx:-4});}
+      if(G.boss==='fabrica'){for(let i=0;i<3;i++)G.inimigos.push({x:420+i*20,y:250+i*15,tipo:'robo',vx:-3.5});}
+      if(G.boss==='nuvens'||G.boss==='nuvensS'){G.inimigos.push({x:420,y:260,tipo:'vento',vx:-5});G.inimigos.push({x:420,y:230,tipo:'energia',vx:-4});}
+      if(G.boss==='final'){G.inimigos.push({x:420,y:270,tipo:'onda',vx:-5});G.inimigos.push({x:460,y:240,tipo:'energia',vx:-4.5});if(G.faseChefe>=2)G.inimigos.push({x:440,y:200,tipo:'vento',vx:-5.5});}
+    }
+    G.tiros.forEach(t=>{
+      if(t.x>380&&t.x<460&&Math.abs(t.y-(260-G.bossY))<60){
+        t.x=999;
+        let danoCausado=t.dano;
+        if(G.boss==='mecanico'&&G.armadura>0){G.armadura--;danoCausado=Math.floor(t.dano/3);if(G.armadura===0)mostrarMsg('💥 Armadura quebrada! Dano total!');}
+        G.bossHP-=danoCausado;if(G.bossHP<=0)bossMorto();
+      }
+    });
+  }
+  G.inimigos.forEach(p=>p.x+=p.vx);G.inimigos=G.inimigos.filter(p=>p.x>-50);
+  for(const p of G.inimigos){if(p.x>45&&p.x<95&&Math.abs(p.y-(260-G.y))<45){dano(1);p.x=-100;break;}}
+  if(!G.boss&&!G.missaoCaixao&&G.dist>=G.alvo){vitoria();return;}
+  if(G.msgT>0)G.msgT--;
+  desenhar();
+}
+
+function desenhar(){
+  const F=FASES[G.fase]||{ceu:'#87ceeb',chao:'#33cc00',terra:'#8b4513',lua:false,armas:false,holly:false,floresta:false,ceuBioma:false,noite:false,fabrica:false};
+  ctx.fillStyle=F.ceu;ctx.fillRect(0,0,480,400);
+  if(F.lua||F.noite){ctx.fillStyle='#eeeecc';ctx.beginPath();ctx.arc(400,50,20,0,7);ctx.fill();ctx.fillStyle='#fff';for(let i=0;i<20;i++){const sx=(i*47)%480;const sy=(i*31)%150;ctx.fillRect(sx,sy,2,2);}}
+  else{ctx.fillStyle='#ffdd00';ctx.fillRect(390,25,40,40);}
+  if(G.ceuBioma){
+    G.nuvens.forEach(n=>{n.x-=n.v;if(n.x<-80)n.x=520;ctx.fillStyle='rgba(255,255,255,.8)';ctx.beginPath();ctx.arc(n.x,n.y,20,0,7);ctx.arc(n.x+20,n.y-5,25,0,7);ctx.arc(n.x+45,n.y,20,0,7);ctx.fill();});
+    G.ilhas.forEach(il=>{const ix=il.x-G.dist*G.vel*0.5;if(ix<-100||ix>520)return;ctx.fillStyle='#33cc00';ctx.fillRect(ix,il.y,il.w,12);ctx.fillStyle='#8b4513';ctx.fillRect(ix,il.y+12,il.w,20);ctx.fillStyle='#228b22';ctx.fillRect(ix+10,il.y-15,8,15);ctx.beginPath();ctx.arc(ix+14,il.y-18,10,0,7);ctx.fill();});
+  }
+  if(F.floresta){ctx.fillStyle='#1a5a1a';for(let i=0;i<5;i++){const tx=80+i*90-(G.dist*0.3)%90;ctx.fillRect(tx+10,240,10,60);ctx.beginPath();ctx.moveTo(tx,220);ctx.lineTo(tx+15,180);ctx.lineTo(tx+30,220);ctx.fill();}}
+  if(F.holly||F.noite){
+    ctx.fillStyle=F.noite?'#1a1a2e':'#222';ctx.fillRect(280,160,50,140);ctx.fillRect(350,180,40,120);ctx.fillRect(410,150,55,150);
+    if(F.noite){ctx.fillStyle='#ffcc00';ctx.fillRect(290,180,8,10);ctx.fillRect(310,200,8,10);ctx.fillRect(360,195,8,10);ctx.fillRect(420,170,8,10);ctx.fillRect(440,200,8,10);}
+    G.carros.forEach(c=>{const cx=c.x-G.dist*G.vel*0.7;if(cx<-50||cx>520)return;ctx.fillStyle=c.cor;ctx.fillRect(cx,270,30,18);ctx.fillStyle='#222';ctx.beginPath();ctx.arc(cx+6,288,5,0,7);ctx.arc(cx+24,288,5,0,7);ctx.fill();});
+    G.plataformas.forEach(p=>{const px=p.x-G.dist*G.vel*0.3;if(px<-50||px>510)return;ctx.fillStyle='#8b4513';ctx.fillRect(px,p.y,p.w,p.h);});
+  }
+  if(F.fabrica){
+    ctx.fillStyle='#444';ctx.fillRect(100,200,60,100);ctx.fillRect(200,180,50,120);
+    ctx.fillStyle='#666';ctx.fillRect(110,210,40,10);ctx.fillRect(210,190,30,10);
+    ctx.fillStyle='#ff6600';ctx.fillRect(125,230,10,10);ctx.fillRect(225,210,10,10);
+  }
+  if(G.missaoCaixao){
+    ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,480,400);
+    ctx.fillStyle='#333';ctx.fillRect(280,150,50,150);ctx.fillRect(350,170,40,130);
+    ctx.fillStyle='#ffcc0044';ctx.fillRect(290,170,10,12);ctx.fillRect(310,170,10,12);
+    const rx=420-G.royDist*0.5;
+    if(rx>50){ctx.fillStyle='#222';ctx.fillRect(rx,250,30,35);ctx.fillStyle='#78350f';ctx.fillRect(rx-5,235,40,15);ctx.fillStyle='#ff0000';ctx.fillRect(rx+5,255,5,5);ctx.fillRect(rx+20,255,5,5);}
+    ctx.fillStyle='rgba(200,200,200,.1)';ctx.fillRect(0,280,480,20);
+  }
+  ctx.fillStyle=F.chao;ctx.fillRect(0,300,480,100);
+  ctx.fillStyle=F.terra;ctx.fillRect(0,340,480,60);
+  ctx.fillStyle='rgba(0,0,0,.2)';for(let i=0;i<15;i++){const px=((i*40+G.chaoX)%520)-20;ctx.fillRect(px,340,20,4);}
+  if(F.armas){G.armasI.forEach(a=>{if(a.peg)return;const ax=a.x-G.dist*G.vel;if(ax<-30||ax>510)return;ctx.fillStyle='#888';ctx.fillRect(ax,a.y,24,10);ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.strokeRect(ax,a.y,24,10);});}
+  G.coins.forEach(c=>{if(c.peg)return;const cx=c.x-G.dist*G.vel;if(cx<-30||cx>510)return;ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(cx,c.y,9,0,7);ctx.fill();ctx.strokeStyle='#b8860b';ctx.lineWidth=2;ctx.stroke();});
+  G.baus.forEach(b=>{const bx=b.x-G.dist*G.vel;if(bx<-50||bx>510)return;ctx.fillStyle=b.aberto?'#ffd700':(b.tipo==='diamante'?'#1e3a5f':'#daa520');ctx.fillRect(bx,270,32,26);ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeRect(bx,270,32,26);});
+  G.obs.forEach(o=>{ctx.fillStyle='#000';ctx.fillRect(o.x,260,o.w,o.h);});
+  if(G.boss==='roy'||G.boss==='royN'){
+    const by=260-G.bossY;
+    const cores=['#ef4444','#3b82f6','#22c55e','#ffd700','#a855f7'];
+    for(let i=0;i<5;i++){ctx.fillStyle=cores[i];ctx.beginPath();ctx.arc(390+i*12,by-45,10,0,7);ctx.fill();ctx.strokeStyle='#000';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(395+i*12,by-35);ctx.lineTo(415,by-5);ctx.stroke();}
+    ctx.fillStyle='#222';ctx.fillRect(400,by,48,50);ctx.fillRect(395,by-15,58,30);
+    ctx.beginPath();ctx.moveTo(395,by-15);ctx.lineTo(388,by-32);ctx.lineTo(408,by-15);ctx.fill();ctx.beginPath();ctx.moveTo(453,by-15);ctx.lineTo(460,by-32);ctx.lineTo(440,by-15);ctx.fill();
+    ctx.fillStyle='#ff0000';ctx.fillRect(408,by-5,7,6);ctx.fillRect(433,by-5,7,6);
+  }
+  if(G.boss==='cam'){ctx.fillStyle='#00aaff';ctx.fillRect(385,245,60,45);ctx.fillStyle='#333';ctx.fillRect(445,250,22,40);ctx.fillStyle='#fff';ctx.fillRect(395,230,40,18);ctx.fillStyle='#222';ctx.beginPath();ctx.arc(400,290,7,0,7);ctx.arc(425,290,7,0,7);ctx.arc(450,290,7,0,7);ctx.fill();}
+  if(G.boss==='pizza'){const by=260-G.bossY;ctx.fillStyle='#d97706';ctx.beginPath();ctx.arc(420,by+20,28,0,7);ctx.fill();ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#22c55e';ctx.fillRect(405,by+10,8,8);ctx.fillRect(428,by+25,8,8);ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(420,by+15,4,0,7);ctx.arc(432,by+30,4,0,7);ctx.fill();ctx.fillStyle='#ffd700';ctx.beginPath();ctx.moveTo(400,by-10);ctx.lineTo(405,by-25);ctx.lineTo(415,by-12);ctx.lineTo(425,by-28);ctx.lineTo(435,by-12);ctx.lineTo(445,by-25);ctx.lineTo(448,by-10);ctx.closePath();ctx.fill();}
+  if(G.boss==='sombra'){const by=260-G.bossY;ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.moveTo(420,by-40);ctx.lineTo(390,by+40);ctx.lineTo(450,by+40);ctx.closePath();ctx.fill();ctx.fillStyle='#ff0000';ctx.fillRect(405,by-5,8,8);ctx.fillRect(427,by-5,8,8);ctx.strokeStyle='#666';ctx.lineWidth=2;ctx.stroke();}
+  if(G.boss==='mecanico'){const by=260-G.bossY;ctx.fillStyle=G.armadura>0?'#888':'#ff9f1c';ctx.fillRect(395,by,50,55);ctx.fillRect(400,by-20,40,25);ctx.fillStyle='#ff0000';ctx.fillRect(408,by-12,6,6);ctx.fillRect(426,by-12,6,6);ctx.fillStyle='#444';ctx.fillRect(390,by+10,10,25);ctx.fillRect(440,by+10,10,25);if(G.armadura>0){ctx.strokeStyle='#aaa';ctx.lineWidth=3;ctx.strokeRect(393,by-22,54,80);}}
+  if(G.boss==='fabrica'){const by=260-G.bossY;ctx.fillStyle='#555';ctx.fillRect(385,by-10,70,65);ctx.fillStyle='#ff6600';ctx.fillRect(400,by,12,12);ctx.fillRect(428,by,12,12);ctx.fillStyle='#222';ctx.fillRect(410,by+25,20,15);ctx.fillStyle='#888';ctx.fillRect(380,by+20,8,30);ctx.fillRect(452,by+20,8,30);}
+  if(G.boss==='nuvens'||G.boss==='nuvensS'){const by=260-G.bossY;ctx.fillStyle='#e0e7ff';ctx.beginPath();ctx.arc(420,by,35,0,7);ctx.arc(445,by-10,30,0,7);ctx.arc(395,by-10,30,0,7);ctx.fill();ctx.strokeStyle='#6366f1';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#1e1b4b';ctx.fillRect(408,by-5,6,6);ctx.fillRect(428,by-5,6,6);}
+  if(G.boss==='final'){const by=260-G.bossY;ctx.fillStyle='#4c1d95';ctx.fillRect(390,by-20,60,60);ctx.fillStyle='#7c3aed';ctx.fillRect(385,by-30,70,15);ctx.fillStyle='#1e1b4b';ctx.fillRect(400,by,10,15);ctx.fillRect(430,by,10,15);ctx.fillStyle='#fbbf24';ctx.fillRect(415,by-15,10,10);ctx.fillStyle='#222';ctx.beginPath();ctx.arc(400,by+45,6,0,7);ctx.arc(440,by+45,6,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 10px monospace';ctx.fillText('Fase '+G.faseChefe,405,by-35);}
+  if(G.boss){
+    ctx.fillStyle='#333';ctx.fillRect(280,10,190,18);
+    const pct=Math.max(0,G.bossHP/G.bossMax);
+    let corChefe='#ef4444';
+    if(G.boss==='cam')corChefe='#00bfff';
+    else if(G.boss==='pizza')corChefe='#fbbf24';
+    else if(G.boss==='sombra')corChefe='#666';
+    else if(G.boss==='mecanico')corChefe='#ff6600';
+    else if(G.boss==='fabrica')corChefe='#888';
+    else if(G.boss==='nuvens'||G.boss==='nuvensS')corChefe='#818cf8';
+    else if(G.boss==='final')corChefe='#a855f7';
+    ctx.fillStyle=corChefe;ctx.fillRect(283,13,184*pct,12);
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(280,10,190,18);
+  }
+  G.inimigos.forEach(p=>{
+    if(p.tipo==='peixe'){ctx.fillStyle='#78350f';ctx.fillRect(p.x,p.y,24,18);}
+    if(p.tipo==='pneu'){ctx.fillStyle='#222';ctx.beginPath();ctx.arc(p.x+8,p.y+8,10,0,7);ctx.fill();}
+    if(p.tipo==='onda'){ctx.fillStyle='#ff8800';ctx.fillRect(p.x,p.y,26,10);}
+    if(p.tipo==='vento'){ctx.fillStyle='#a5f3fc';ctx.beginPath();ctx.arc(p.x+8,p.y+5,8,0,7);ctx.fill();}
+    if(p.tipo==='energia'){ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.arc(p.x+8,p.y+8,9,0,7);ctx.fill();}
+    if(p.tipo==='armadilha'){ctx.fillStyle='#7f1d1d';ctx.fillRect(p.x,p.y,20,20);ctx.fillStyle='#fbbf24';ctx.fillRect(p.x+5,p.y+5,10,10);}
+    if(p.tipo==='sombra'){ctx.fillStyle='#1a1a2e';ctx.fillRect(p.x,p.y,20,25);}
+    if(p.tipo==='peca'){ctx.fillStyle='#888';ctx.fillRect(p.x,p.y,18,12);}
+    if(p.tipo==='robo'){ctx.fillStyle='#666';ctx.fillRect(p.x,p.y,16,20);ctx.fillStyle='#ff0000';ctx.fillRect(p.x+4,p.y+4,3,3);ctx.fillRect(p.x+9,p.y+4,3,3);}
+  });
+  G.tiros.forEach(t=>{
+    ctx.fillStyle=t.cor||'#ffcc00';
+    if(t.tipo==='bolhas'){ctx.beginPath();ctx.arc(t.x+7,t.y+3,7,0,7);ctx.fill();}
+    else if(t.tipo==='estrelas'){ctx.fillStyle='#ffd700';ctx.beginPath();ctx.moveTo(t.x+7,t.y);ctx.lineTo(t.x+10,t.y+5);ctx.lineTo(t.x+16,t.y+5);ctx.lineTo(t.x+11,t.y+9);ctx.lineTo(t.x+13,t.y+15);ctx.lineTo(t.x+7,t.y+11);ctx.lineTo(t.x+1,t.y+15);ctx.lineTo(t.x+3,t.y+9);ctx.lineTo(t.x-2,t.y+5);ctx.lineTo(t.x+4,t.y+5);ctx.closePath();ctx.fill();}
+    else ctx.fillRect(t.x,t.y,14,7);
+  });
+  const tx=G.x,ty=260-G.y;
+  let cor='#ff9f1c';
+  if(save.skin==='halloween')cor='#7c3aed';else if(save.skin==='dourado')cor='#ffd700';else if(save.skin==='piscina')cor='#22d3ee';else if(save.skin==='explorador')cor='#16a34a';else if(save.skin==='celeste')cor='#7dd3fc';else if(save.skin==='piloto')cor='#2563eb';else if(save.skin==='deise')cor='#ec4899';else if(save.skin==='royVoador')cor='#333';else if(save.skin==='sombra')cor='#1a1a2e';else if(save.skin==='guardiao')cor='#666';
+  const pisca=G.invul>0&&Math.floor(G.invul/5)%2===0;
+  if(!pisca){
+    if(G.veiculo){ctx.fillStyle='#ef4444';ctx.beginPath();ctx.ellipse(tx+15,ty-10,35,18,0,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(tx,ty-15,12,6);ctx.fillRect(tx+20,ty-15,12,6);}
+    ctx.fillStyle=cor;ctx.fillRect(tx+6,ty-18,5,16);ctx.fillRect(tx+21,ty-18,5,16);
+    ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.strokeRect(tx+6,ty-18,5,16);ctx.strokeRect(tx+21,ty-18,5,16);
+    ctx.fillStyle=cor;ctx.fillRect(tx+2,ty-4,28,22);ctx.strokeRect(tx+2,ty-4,28,22);
+    ctx.fillStyle='#000';ctx.fillRect(tx+8,ty+2,4,4);ctx.fillRect(tx+20,ty+2,4,4);
+    ctx.fillStyle='#e63946';ctx.beginPath();ctx.arc(tx+16,ty+10,3,0,7);ctx.fill();
+    ctx.fillStyle=cor;ctx.fillRect(tx+4,ty+18,24,20);ctx.strokeRect(tx+4,ty+18,24,20);
+    ctx.fillStyle='#fff';ctx.fillRect(tx-2,ty+22,7,9);ctx.fillRect(tx+27,ty+22,7,9);ctx.strokeRect(tx-2,ty+22,7,9);ctx.strokeRect(tx+27,ty+22,7,9);
+    ctx.fillStyle=cor;ctx.fillRect(tx+6,ty+38,7,6);ctx.fillRect(tx+19,ty+38,7,6);
+    if(G.arma){const a=ARMAS[save.arma];ctx.fillStyle=a.cor;ctx.fillRect(tx+30,ty+20,16,5);}
+  }
+  ctx.fillStyle='#fff';ctx.font='bold 13px monospace';
+  ctx.fillText('🏃 '+Math.floor(G.dist)+'m',10,20);
+  ctx.fillText('💰 '+Math.floor(G.moedas)+(G.moedaMeta>0?'/'+G.moedaMeta:''),10,38);
+  ctx.fillText('🦘 '+G.pulos,10,56);
+  if(G.missaoCaixao){ctx.fillStyle='#fbbf24';ctx.font='bold 11px monospace';ctx.fillText('🏃 Roy: '+Math.max(0,Math.floor(G.royDist))+'m!',10,74);ctx.fillStyle='#333';ctx.fillRect(10,80,200,8);ctx.fillStyle='#4ade80';ctx.fillRect(10,80,200*(1-G.royDist/300),8);}
+  if(G.msgT>0){ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(50,170,380,40);ctx.fillStyle='#ffd700';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(G.msg,240,195);ctx.textAlign='left';}
+}
+
+// BOTÕES
+document.getElementById('b-jogar').addEventListener('click',()=>iniciar(1));
+document.getElementById('b-fases').addEventListener('click',abrirFases);
+document.getElementById('b-skins').addEventListener('click',abrirSkins);
+document.getElementById('b-armas').addEventListener('click',abrirArmas);
+document.getElementById('b-loja').addEventListener('click',abrirLoja);
+document.getElementById('b-eventos').addEventListener('click',abrirEventos);
+document.getElementById('b-missoes').addEventListener('click',abrirMissoes);
+document.getElementById('b-config').addEventListener('click',abrirConfig);
+document.getElementById('b-caixao').addEventListener('click',abrirCaixao);
+document.getElementById('b-volt-fases').addEventListener('click',menu);
+document.getElementById('b-volt-skins').addEventListener('click',menu);
+document.getElementById('b-volt-armas').addEventListener('click',menu);
+document.getElementById('b-volt-loja').addEventListener('click',menu);
+document.getElementById('b-volt-eventos').addEventListener('click',menu);
+document.getElementById('b-volt-missoes').addEventListener('click',menu);
+document.getElementById('b-volt-config').addEventListener('click',menu);
+document.getElementById('b-tutorial').addEventListener('click',()=>{esconder();mostrarTutorial();});
+document.getElementById('b-reset').addEventListener('click',()=>{if(confirm('Tem certeza? Isso apaga TODO o progresso!')){localStorage.removeItem('tonnyRunV11');location.reload();}});
+document.getElementById('b-bau1').addEventListener('click',()=>{if(save.moedas>=100){save.moedas-=100;const g=Math.floor(Math.random()*15)+5;save.dias+=g;salvar();attUI();alert('🎉 +'+g+' 💎!');}else alert('❌ Precisa de 100!');});
+document.getElementById('b-bau2').addEventListener('click',()=>{if(save.moedas>=500){save.moedas-=500;const g=Math.floor(Math.random()*40)+20;save.dias+=g;salvar();attUI();alert('🎉 +'+g+' 💎!');}else alert('❌ Precisa de 500!');});
+document.getElementById('c-pular').addEventListener('click',pular);
+document.getElementById('c-pular').addEventListener('touchstart',e=>{e.preventDefault();pular();});
+document.getElementById('c-dash').addEventListener('click',dash);
+document.getElementById('c-dash').addEventListener('touchstart',e=>{e.preventDefault();dash();});
+document.getElementById('c-atacar').addEventListener('click',atacar);
+document.getElementById('c-atacar').addEventListener('touchstart',e=>{e.preventDefault();atacar();});
+document.getElementById('c-veiculo').addEventListener('click',entrarVeiculo);
+document.getElementById('c-veiculo').addEventListener('touchstart',e=>{e.preventDefault();entrarVeiculo();});
+document.getElementById('c-pausa').addEventListener('click',pausar);
+document.getElementById('b-cont').addEventListener('click',continuar);
+document.getElementById('b-rein').addEventListener('click',()=>{document.getElementById('t-pausa').classList.remove('mostrar');if(G.missaoCaixao)iniciarMissaoCaixao();else iniciar(G.fase);});
+document.getElementById('b-sair').addEventListener('click',menu);
+document.getElementById('b-tentar').addEventListener('click',()=>{document.getElementById('t-gameover').classList.remove('mostrar');if(G.missaoCaixao)iniciarMissaoCaixao();else iniciar(G.fase);});
+document.getElementById('b-go-menu').addEventListener('click',()=>{document.getElementById('t-gameover').classList.remove('mostrar');menu();});
+document.getElementById('b-prox').addEventListener('click',()=>{document.getElementById('t-vitoria').classList.remove('mostrar');if(G.missaoCaixao){menu();return;}const prox=G.fase<110?G.fase+1:1;iniciar(prox);});
+document.getElementById('b-rep').addEventListener('click',()=>{document.getElementById('t-vitoria').classList.remove('mostrar');if(G.missaoCaixao)iniciarMissaoCaixao();else iniciar(G.fase);});
+document.getElementById('b-vit-menu').addEventListener('click',()=>{document.getElementById('t-vitoria').classList.remove('mostrar');menu();});
+document.getElementById('b-pular-cena').addEventListener('click',pularCena);
+document.getElementById('b-prox-cena').addEventListener('click',()=>{cinPasso++;if(cinPasso>=CIN.length){pularCena();return;}atualizarCin();});
+document.getElementById('b-pular-tut').addEventListener('click',fecharTutorial);
+document.getElementById('b-prox-tut').addEventListener('click',()=>{tutPasso++;if(tutPasso>=TUT.length){fecharTutorial();return;}atualizarTut();});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW'){e.preventDefault();if(G.rod&&!G.paus)pular();}
+  if(e.code==='ShiftLeft'||e.code==='KeyD'){if(G.rod&&!G.paus)dash();}
+  if(e.code==='KeyJ'||e.code==='KeyX'){if(G.rod&&!G.paus)atacar();}
+  if(e.code==='KeyV'){if(G.rod&&!G.paus)entrarVeiculo();}
+  if(e.code==='Escape'){if(G.rod&&!G.paus)pausar();else if(G.paus)continuar();}
+});
+attUI();menu();
+</script>
+</body>
+</html>
